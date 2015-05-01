@@ -1,6 +1,45 @@
 <resources>
-    <string name="app_name">HW1</string>
-
+    <string name="app_name">HW1 - Calculator</string>
+    <string name="MainPage">Basic Calculator</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Strings for buttons -->
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="seven">7</string>
+    <string name="eight">8</string>
+    <string name="nine">9</string>
+    <string name="zero">0</string>
+    <string name="sin">sin</string>
+    <string name="cos">cos</string>
+    <string name="tan">tan</string>
+    <string name="pi">&#960;</string>
+    <string name="dot">.</string>
+    <string name="add">+</string>
+    <string name="sub">-</string>
+    <string name="eq">=</string>
+    <string name="perc">%</string>
+    <string name="left">(</string>
+    <string name="right">)</string>
+    <string name="exc">!</string>
+    <string name="sqrt">&#8730;</string>
+    <string name="pow">^</string>
+    <string name="e">e</string>
+    <string name="i">i</string>
+    <string name="ln">ln</string>
+    <string name="log">log</string>
+    <string name="divide">&#247;</string>
+    <string name="mult">*</string>
+    <string name="del">Del</string>
+    <dimen name="fonts">40sp</dimen>
+
+    <string name="advanced">Advanced</string>
+    <string name="basic">Basic</string>
+
+
 </resources>
