@@ -112,9 +112,16 @@ public class MainActivity extends ActionBarActivity {
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                equation = edit.getText().toString().trim();
+                if(equation.isEmpty()){
+                    first = 0.0;
+                    operands = "empty";
+                    second = 0.0;
+                }
                 position = 0;
                 edit.setSelection(position);
                 edit.setText("");
+
             }
         });
 
