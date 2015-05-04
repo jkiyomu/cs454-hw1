@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends ActionBarActivity {
     Button one;
@@ -48,6 +50,7 @@ public class MainActivity extends ActionBarActivity {
     double total = 0.0;
     boolean error = false;
     boolean easy = true;
+    ArrayList<Equations> equations;
 
     String regex = "(\\bsin\\b)\\(|(\\bcos\\b)\\(|(\\btan\\b)\\(|(\\bsqrt\\b)\\(|(\\be\\b)\\(|(\\bln\\b)\\(|(\\blog\\b)\\(|([\\()*^\\-+/!]+)";
     String regex2 = "(?=\\bsin\\b\\()|(?<=\\bsin\\b\\()|(\\bcos\\b\\()|(\\btan\\b\\()|(\\bsqrt\\b\\()|(\\be\\b\\()|(\\bln\\b\\()|(\\blog\\b\\()|(?=[\\()*^\\-+/!]+)|(?<=[\\()*^\\-+/!]+)";
@@ -59,6 +62,13 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
+        ArrayList<Equations> equa = (ArrayList<Equations>) intent.getSerializableExtra("equations");
+        if(equa != null){
+            equations = equa;
+        }else{
+            Equations equate = new Equations();
+            equations.add(equate);
+        }
         if(intent.getStringExtra("equation") != null) equation = intent.getStringExtra("equation");
         position = intent.getIntExtra("position", 0);
         first = intent.getDoubleExtra("first", 0.0);
@@ -204,7 +214,15 @@ public class MainActivity extends ActionBarActivity {
                         if(equation.trim().isEmpty()){
                             second = Double.parseDouble(equation.trim());
                             first = calculate(first, operands, second);
+
                             operands = "+";
+                            if(equations.size() > 1){
+                                equations.get(0).setFirst(first);
+                                equations.get(0).setSecond(second);
+                                equations.get(0).setOperands(operands);
+                            }else{
+
+                            }
                             if(first % 1 == 0){
                                 String temp = ""+(int) first;
                                 int end = temp.length()-1;
@@ -234,6 +252,12 @@ public class MainActivity extends ActionBarActivity {
                     }else{
                         first = Double.parseDouble(equation);
                         operands = "+";
+                        if(equations.size() > 1){
+
+                        }else{
+                            equations.get(0).setFirst(first);
+                            equations.get(0).setOperands(operands);
+                        }
                         edit.setText("");
                     }
                 }else {
@@ -281,6 +305,11 @@ public class MainActivity extends ActionBarActivity {
                                 edit.setText(temp);
                                 edit.setSelection(end);
                             }
+                            if(equations.size()>1){
+
+                            }else{
+                                equations.get(0).setFirst(first);
+                            }
                         }
 
                     }else{
@@ -290,6 +319,12 @@ public class MainActivity extends ActionBarActivity {
                             first = Double.parseDouble(equation);
                             operands = "-";
                             edit.setText("");
+                            if(equations.size()>1){
+
+                            }else{
+                                equations.get(0).setFirst(first);
+                                equations.get(0).setOperands(operands);
+                            }
                         }
                     }
                 }else {
@@ -335,6 +370,12 @@ public class MainActivity extends ActionBarActivity {
                                 edit.setText(temp);
                                 edit.setSelection(end);
                             }
+                            if(equations.size()>1){
+
+                            }else{
+                                equations.get(0).setFirst(first);
+                                equations.get(0).setOperands(operands);
+                            }
                         }else{
                             first /= Double.parseDouble(equation);
                             if(first % 1 == 0){
@@ -348,12 +389,23 @@ public class MainActivity extends ActionBarActivity {
                                 edit.setText(temp);
                                 edit.setSelection(end);
                             }
+                            if(equations.size()>1){
+
+                            }else{
+                                equations.get(0).setFirst(first);
+                            }
                         }
 
                     }else{
                         first = Double.parseDouble(equation);
                         operands = "/";
                         edit.setText("");
+                        if(equations.size()>1){
+
+                        }else{
+                            equations.get(0).setFirst(first);
+                            equations.get(0).setOperands(operands);
+                        }
                     }
                 }else {
                     if ((start < start) && ((int) equation.charAt(start - 1) >= 48 && (int) equation.charAt(size - 1) <= 57 && (int) equation.charAt(start) >= 48 && (int) equation.charAt(start) <= 57) ||
@@ -398,6 +450,12 @@ public class MainActivity extends ActionBarActivity {
                                 edit.setText(temp);
                                 edit.setSelection(end);
                             }
+                            if(equations.size()>1){
+
+                            }else{
+                                equations.get(0).setFirst(first);
+                                equations.get(0).setOperands(operands);
+                            }
                         }else{
                             first *= Double.parseDouble(equation);
                             if(first % 1 == 0){
@@ -411,12 +469,23 @@ public class MainActivity extends ActionBarActivity {
                                 edit.setText(temp);
                                 edit.setSelection(end);
                             }
+                            if(equations.size()>1){
+
+                            }else{
+                                equations.get(0).setFirst(first);
+                            }
                         }
 
                     }else{
                         first = Double.parseDouble(equation);
                         operands = "*";
                         edit.setText("");
+                        if(equations.size()>1){
+
+                        }else{
+                            equations.get(0).setFirst(first);
+                            equations.get(0).setOperands(operands);
+                        }
                     }
                 }else {
                     if ((start < start) && ((int) equation.charAt(start - 1) >= 48 && (int) equation.charAt(size - 1) <= 57 && (int) equation.charAt(start) >= 48 && (int) equation.charAt(start) <= 57) ||
@@ -466,7 +535,18 @@ public class MainActivity extends ActionBarActivity {
                 if(easy){
                     if(operands != "empty" && !operands.isEmpty()){
                         if(equation == null || equation.isEmpty()){
-
+                            if(first % 1 == 0){
+                                String temp = ""+((int)first);
+                                edit.setText(temp);
+                                int end = temp.length();
+                                edit.setSelection(end);
+                            }else{
+                                String temp = String.valueOf(first);
+                                edit.setText(temp);
+                                int end = temp.length();
+                                Toast.makeText(MainActivity.this, ""+end, Toast.LENGTH_LONG).show();
+                                edit.setSelection(end);
+                            }
                         }else{
                             second = Double.parseDouble(equation.trim());
                             first = calculate(first, operands, second);
@@ -489,6 +569,8 @@ public class MainActivity extends ActionBarActivity {
                     operands = "empty";
                     first = 0.0;
                     second = 0.0;
+                    equations.clear();
+                    equations.add(new Equations());
 
                 }else {
                     Toast.makeText(MainActivity.this, equation, Toast.LENGTH_LONG).show();
@@ -534,9 +616,20 @@ public class MainActivity extends ActionBarActivity {
             case "/":
                 this.total = first / second;
                 break;
+            case "^":
+                this.total = Math.pow(first, second);
+                break;
         }
 
         return this.total;
+    }
+
+    public double calculateParenth(int index){
+        double total = 0.0;
+
+        equations.get(index);
+
+        return total;
     }
 
     public void showErrorToast(){
@@ -710,6 +803,7 @@ public class MainActivity extends ActionBarActivity {
             intent.putExtra("first", first);
             intent.putExtra("second", second);
             intent.putExtra("operands", operands);
+            intent.putExtra("equations", equations);
             intent.putExtra("position", edit.getSelectionStart());
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent);

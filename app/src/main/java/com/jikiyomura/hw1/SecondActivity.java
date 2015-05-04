@@ -329,6 +329,12 @@ public class SecondActivity extends ActionBarActivity {
             public void onClick(View v){
                 edit.getText().insert(edit.getSelectionStart(), "^");
                 //edit.setText(equation);
+                equation = edit.getText().toString().trim();
+                if(!equation.isEmpty()){
+                    if(operands != "empty" && !operands.isEmpty()){
+                        operands += "^";
+                    }
+                }
 
             }
         });
@@ -566,6 +572,9 @@ public class SecondActivity extends ActionBarActivity {
                 }else {
                     total = first / second;
                 }
+                break;
+            case "^":
+                total = Math.pow(first, second);
                 break;
         }
         return total;
