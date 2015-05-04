@@ -37,6 +37,7 @@ public class MainActivity extends ActionBarActivity {
     Button eq;
     Button dot;
     Button del;
+    Button clear;
     EditText edit;
     String equation = "";
     double first = 0.0, second = 0.0;
@@ -57,16 +58,23 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        equation = getIntent().getStringExtra("equation");
-        position = getIntent().getIntExtra("position", 0);
-        first = getIntent().getDoubleExtra("first", 0.0);
-        second = getIntent().getDoubleExtra("second", 0.0);
-        if (getIntent().getStringExtra("operands") != null) {
-            operands = getIntent().getStringExtra("operands");
+        Intent intent = getIntent();
+        if(intent.getStringExtra("equation") != null) equation = intent.getStringExtra("equation");
+        position = intent.getIntExtra("position", 0);
+        first = intent.getDoubleExtra("first", 0.0);
+        second = intent.getDoubleExtra("second", 0.0);
+        if (intent.getStringExtra("operands") != null) {
+            operands = intent.getStringExtra("operands");
         }
 
         edit = (EditText) findViewById(R.id.editText);
-        edit.setSelection(position);
+        edit.setText(equation);
+        if (position > equation.length()){
+            edit.setSelection(equation.length());
+        }else{
+            edit.setSelection(position);
+        }
+
         View.OnTouchListener otl = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -86,6 +94,17 @@ public class MainActivity extends ActionBarActivity {
             }
         };
         edit.setOnTouchListener(otl);
+
+        clear = (Button) findViewById(R.id.clear);
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                position = 0;
+                edit.setSelection(position);
+                edit.setText("");
+            }
+        });
+
         one = (Button) findViewById(R.id.one);
         one.setOnClickListener(new View.OnClickListener(){
             @Override

@@ -6,6 +6,6 @@
 
     <item android:id="@+id/advanced"
         android:title="@string/advanced"
-        android:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"/>
 </menu>
 <!-- From: file:/C:/Users/Jeffrey/Documents/Android%20Projects/HW1/app/src/main/res/menu/menu_main.xml -->

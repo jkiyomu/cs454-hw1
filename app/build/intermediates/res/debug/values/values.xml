@@ -184,6 +184,7 @@
     <string name="advanced">Advanced</string>
     <string name="app_name">HW1 - Calculator</string>
     <string name="basic">Basic</string>
+    <string name="clear">Clear</string>
     <string name="cos">cos</string>
     <string name="del">Del</string>
     <string name="divide">÷</string>

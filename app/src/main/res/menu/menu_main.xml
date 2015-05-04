@@ -6,5 +6,5 @@
 
     <item android:id="@+id/advanced"
         android:title="@string/advanced"
-        android:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"/>
 </menu>
