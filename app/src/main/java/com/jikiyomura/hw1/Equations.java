@@ -1,9 +1,11 @@
 package com.jikiyomura.hw1;
 
+import java.io.Serializable;
+
 /**
  * Created by Jeffrey on 5/3/2015.
  */
-public class Equations {
+public class Equations implements Serializable {
     private double first;
     private String operands = "empty";
     private double second;
@@ -42,4 +44,5 @@ public class Equations {
     public void setSecond(double second) {
         this.second = second;
     }
+
 }

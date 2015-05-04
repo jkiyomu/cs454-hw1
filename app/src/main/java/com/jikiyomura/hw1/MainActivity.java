@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.InputType;
 import android.text.Layout;
 import android.util.AttributeSet;
@@ -51,6 +52,7 @@ public class MainActivity extends ActionBarActivity {
     boolean error = false;
     boolean easy = true;
     ArrayList<Equations> equations;
+    int index = 0;
 
     String regex = "(\\bsin\\b)\\(|(\\bcos\\b)\\(|(\\btan\\b)\\(|(\\bsqrt\\b)\\(|(\\be\\b)\\(|(\\bln\\b)\\(|(\\blog\\b)\\(|([\\()*^\\-+/!]+)";
     String regex2 = "(?=\\bsin\\b\\()|(?<=\\bsin\\b\\()|(\\bcos\\b\\()|(\\btan\\b\\()|(\\bsqrt\\b\\()|(\\be\\b\\()|(\\bln\\b\\()|(\\blog\\b\\()|(?=[\\()*^\\-+/!]+)|(?<=[\\()*^\\-+/!]+)";
@@ -62,13 +64,14 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
-        ArrayList<Equations> equa = (ArrayList<Equations>) intent.getSerializableExtra("equations");
-        if(equa != null){
-            equations = equa;
-        }else{
+        /*
+        equations = (ArrayList<Equations>) intent.getSerializableExtra("equations");
+        if(equations == null || equations.isEmpty()){
             Equations equate = new Equations();
             equations.add(equate);
         }
+        */
+        intent.getIntExtra("index", 0);
         if(intent.getStringExtra("equation") != null) equation = intent.getStringExtra("equation");
         position = intent.getIntExtra("position", 0);
         first = intent.getDoubleExtra("first", 0.0);
@@ -202,27 +205,20 @@ public class MainActivity extends ActionBarActivity {
         add.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                equation = edit.getText().toString();
+                equation = edit.getText().toString().trim();
                 int start = edit.getSelectionStart();
                 //Toast.makeText(MainActivity.this, ""+start, Toast.LENGTH_SHORT).show();
                 int size = equation.length();
-                Log.i(TAG, "Start: "+start + " size: "+size);
+                Log.i(TAG, "Start: " + start + " size: " + size);
+
 
 
                 if(easy){
-                    if(operands != "empty" && !operands.isEmpty()) { // operands isnot empty
+                    if(!operands.equalsIgnoreCase("empty") && !operands.isEmpty()){
                         if(equation.trim().isEmpty()){
                             second = Double.parseDouble(equation.trim());
                             first = calculate(first, operands, second);
-
                             operands = "+";
-                            if(equations.size() > 1){
-                                equations.get(0).setFirst(first);
-                                equations.get(0).setSecond(second);
-                                equations.get(0).setOperands(operands);
-                            }else{
-
-                            }
                             if(first % 1 == 0){
                                 String temp = ""+(int) first;
                                 int end = temp.length()-1;
@@ -230,19 +226,61 @@ public class MainActivity extends ActionBarActivity {
                                 edit.setSelection(end);
                             }else{
                                 String temp = String.valueOf(first);
+                                int end = temp.length()-1;
+                                edit.setText(temp);
+                                edit.setSelection(end);
+                            }
+                        }else {
+                            first += Double.parseDouble(equation);
+                            if (first % 1 == 0) {
+                                String temp = "" + (int) first;
+                                int end = temp.length() - 1;
+                                edit.setText(temp);
+                                edit.setSelection(end);
+                            } else {
+                                String temp = String.valueOf(first);
+                                int end = temp.length() - 1;
+                                edit.setText(temp);
+                                edit.setSelection(end);
+                            }
+                        }
+
+                    }else{
+                        first = Double.parseDouble(equation);
+                        operands = "+";
+
+                        edit.setText("");
+                    }
+                    /*
+                    if(equations.get(index).getOperands() != "empty" && !equations.get(index).getOperands().isEmpty()) { // operands isnot empty
+                        if(equation.trim().isEmpty()){
+                            second = Double.parseDouble(equation.trim());
+                            first = calculate(equations.get(index).getFirst(), equations.get(index).getOperands(), second);
+
+                            operands = "+";
+                            equations.get(index).setFirst(first);
+                            equations.get(index).setSecond(second);
+                            equations.get(index).setOperands(operands);
+                            if(equations.get(index).getFirst() % 1 == 0){
+                                String temp = ""+(int) equations.get(index).getFirst();
+                                int end = temp.length()-1;
+                                edit.setText(temp);
+                                edit.setSelection(end);
+                            }else{
+                                String temp = String.valueOf(equations.get(index).getFirst());
                                 int end = temp.length()-1;
                                 edit.setText(temp);
                                 edit.setSelection(end);
                             }
                         }else{
-                            first += Double.parseDouble(equation);
-                            if(first % 1 == 0){
-                                String temp = ""+(int) first;
+                            equations.get(index).setFirst(equations.get(index).getFirst() + Double.parseDouble(equation)) ;
+                            if(equations.get(index).getFirst() % 1 == 0){
+                                String temp = ""+(int) equations.get(index).getFirst();
                                 int end = temp.length()-1;
                                 edit.setText(temp);
                                 edit.setSelection(end);
                             }else{
-                                String temp = String.valueOf(first);
+                                String temp = String.valueOf(equations.get(index).getFirst());
                                 int end = temp.length()-1;
                                 edit.setText(temp);
                                 edit.setSelection(end);
@@ -252,14 +290,12 @@ public class MainActivity extends ActionBarActivity {
                     }else{
                         first = Double.parseDouble(equation);
                         operands = "+";
-                        if(equations.size() > 1){
+                        equations.get(index).setFirst(first);
+                        equations.get(index).setOperands(operands);
 
-                        }else{
-                            equations.get(0).setFirst(first);
-                            equations.get(0).setOperands(operands);
-                        }
                         edit.setText("");
                     }
+                    */
                 }else {
                     if ((start < start) && ((int) equation.charAt(start - 1) >= 48 && (int) equation.charAt(size - 1) <= 57 && (int) equation.charAt(start) >= 48 && (int) equation.charAt(start) <= 57) ||
                             ((int) equation.charAt(start - 1) == 41)) {
@@ -288,12 +324,11 @@ public class MainActivity extends ActionBarActivity {
                 int size = equation.length();
 
                 if(easy){
-
-                    if(operands != "empty" && !operands.isEmpty()) { // operands isnot empty
+                    if(!operands.equalsIgnoreCase("empty") && !operands.isEmpty()){
                         if(equation.trim().isEmpty()){
-                            edit.getText().insert(edit.getSelectionStart(), "-");
-                        }else{
-                            first -= Double.parseDouble(equation);
+                            second = Double.parseDouble(equation.trim());
+                            first = calculate(first, operands, second);
+                            operands = "-";
                             if(first % 1 == 0){
                                 String temp = ""+(int) first;
                                 int end = temp.length()-1;
@@ -305,27 +340,26 @@ public class MainActivity extends ActionBarActivity {
                                 edit.setText(temp);
                                 edit.setSelection(end);
                             }
-                            if(equations.size()>1){
-
-                            }else{
-                                equations.get(0).setFirst(first);
+                        }else {
+                            first -= Double.parseDouble(equation);
+                            if (first % 1 == 0) {
+                                String temp = "" + (int) first;
+                                int end = temp.length() - 1;
+                                edit.setText(temp);
+                                edit.setSelection(end);
+                            } else {
+                                String temp = String.valueOf(first);
+                                int end = temp.length() - 1;
+                                edit.setText(temp);
+                                edit.setSelection(end);
                             }
                         }
 
                     }else{
-                        if(equation.isEmpty()){
-                            edit.getText().insert(edit.getSelectionStart(), "-");
-                        }else {
-                            first = Double.parseDouble(equation);
-                            operands = "-";
-                            edit.setText("");
-                            if(equations.size()>1){
+                        first = Double.parseDouble(equation);
+                        operands = "-";
 
-                            }else{
-                                equations.get(0).setFirst(first);
-                                equations.get(0).setOperands(operands);
-                            }
-                        }
+                        edit.setText("");
                     }
                 }else {
                     if ((start < start) && ((int) equation.charAt(start - 1) >= 48 && (int) equation.charAt(size - 1) <= 57 && (int) equation.charAt(start) >= 48 && (int) equation.charAt(start) <= 57) ||
@@ -354,7 +388,7 @@ public class MainActivity extends ActionBarActivity {
                 //Toast.makeText(MainActivity.this, ""+start, Toast.LENGTH_SHORT).show();
                 int size = equation.length();
                 if(easy){
-                    if(operands != "empty" && !operands.isEmpty()) { // operands isnot empty
+                    if(!operands.equalsIgnoreCase("empty") && !operands.isEmpty()){
                         if(equation.trim().isEmpty()){
                             second = Double.parseDouble(equation.trim());
                             first = calculate(first, operands, second);
@@ -370,42 +404,26 @@ public class MainActivity extends ActionBarActivity {
                                 edit.setText(temp);
                                 edit.setSelection(end);
                             }
-                            if(equations.size()>1){
-
-                            }else{
-                                equations.get(0).setFirst(first);
-                                equations.get(0).setOperands(operands);
-                            }
-                        }else{
+                        }else {
                             first /= Double.parseDouble(equation);
-                            if(first % 1 == 0){
-                                String temp = ""+(int) first;
-                                int end = temp.length()-1;
+                            if (first % 1 == 0) {
+                                String temp = "" + (int) first;
+                                int end = temp.length() - 1;
                                 edit.setText(temp);
                                 edit.setSelection(end);
-                            }else{
+                            } else {
                                 String temp = String.valueOf(first);
-                                int end = temp.length()-1;
+                                int end = temp.length() - 1;
                                 edit.setText(temp);
                                 edit.setSelection(end);
-                            }
-                            if(equations.size()>1){
-
-                            }else{
-                                equations.get(0).setFirst(first);
                             }
                         }
 
                     }else{
                         first = Double.parseDouble(equation);
                         operands = "/";
-                        edit.setText("");
-                        if(equations.size()>1){
 
-                        }else{
-                            equations.get(0).setFirst(first);
-                            equations.get(0).setOperands(operands);
-                        }
+                        edit.setText("");
                     }
                 }else {
                     if ((start < start) && ((int) equation.charAt(start - 1) >= 48 && (int) equation.charAt(size - 1) <= 57 && (int) equation.charAt(start) >= 48 && (int) equation.charAt(start) <= 57) ||
@@ -434,7 +452,7 @@ public class MainActivity extends ActionBarActivity {
                 //Toast.makeText(MainActivity.this, ""+start, Toast.LENGTH_SHORT).show();
                 int size = equation.length();
                 if(easy){
-                    if(operands != "empty" && !operands.isEmpty()) { // operands isnot empty
+                    if(!operands.equalsIgnoreCase("empty") && !operands.isEmpty()){
                         if(equation.trim().isEmpty()){
                             second = Double.parseDouble(equation.trim());
                             first = calculate(first, operands, second);
@@ -450,42 +468,26 @@ public class MainActivity extends ActionBarActivity {
                                 edit.setText(temp);
                                 edit.setSelection(end);
                             }
-                            if(equations.size()>1){
-
-                            }else{
-                                equations.get(0).setFirst(first);
-                                equations.get(0).setOperands(operands);
-                            }
-                        }else{
+                        }else {
                             first *= Double.parseDouble(equation);
-                            if(first % 1 == 0){
-                                String temp = ""+(int) first;
-                                int end = temp.length()-1;
+                            if (first % 1 == 0) {
+                                String temp = "" + (int) first;
+                                int end = temp.length() - 1;
                                 edit.setText(temp);
                                 edit.setSelection(end);
-                            }else{
+                            } else {
                                 String temp = String.valueOf(first);
-                                int end = temp.length()-1;
+                                int end = temp.length() - 1;
                                 edit.setText(temp);
                                 edit.setSelection(end);
-                            }
-                            if(equations.size()>1){
-
-                            }else{
-                                equations.get(0).setFirst(first);
                             }
                         }
 
                     }else{
                         first = Double.parseDouble(equation);
                         operands = "*";
-                        edit.setText("");
-                        if(equations.size()>1){
 
-                        }else{
-                            equations.get(0).setFirst(first);
-                            equations.get(0).setOperands(operands);
-                        }
+                        edit.setText("");
                     }
                 }else {
                     if ((start < start) && ((int) equation.charAt(start - 1) >= 48 && (int) equation.charAt(size - 1) <= 57 && (int) equation.charAt(start) >= 48 && (int) equation.charAt(start) <= 57) ||
@@ -533,51 +535,99 @@ public class MainActivity extends ActionBarActivity {
                 equation = edit.getText().toString().trim();
 
                 if(easy){
-                    if(operands != "empty" && !operands.isEmpty()){
-                        if(equation == null || equation.isEmpty()){
-                            if(first % 1 == 0){
-                                String temp = ""+((int)first);
+                    if (!operands.equalsIgnoreCase("empty") && !operands.isEmpty()) {
+                        if (equation == null || equation.isEmpty()) {
+                            if (first % 1 == 0) {
+                                String temp = "" + ((int) first);
                                 edit.setText(temp);
                                 int end = temp.length();
                                 edit.setSelection(end);
-                            }else{
+                            } else {
                                 String temp = String.valueOf(first);
                                 edit.setText(temp);
                                 int end = temp.length();
-                                Toast.makeText(MainActivity.this, ""+end, Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this, "" + end, Toast.LENGTH_LONG).show();
                                 edit.setSelection(end);
                             }
-                        }else{
+                        } else {
                             second = Double.parseDouble(equation.trim());
                             first = calculate(first, operands, second);
-                            if(first % 1 == 0){
-                                String temp = ""+((int)first);
+                            if (first % 1 == 0) {
+                                String temp = "" + ((int) first);
                                 edit.setText(temp);
                                 int end = temp.length();
                                 edit.setSelection(end);
-                            }else{
+                            } else {
                                 String temp = String.valueOf(first);
                                 edit.setText(temp);
                                 int end = temp.length();
-                                Toast.makeText(MainActivity.this, ""+end, Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this, "" + end, Toast.LENGTH_LONG).show();
                                 edit.setSelection(end);
                             }
                         }
-                    }else{
+                    } else {
                     }
 
+
+
+
+
+                    /*
+                    int balanced = 0;
+                    for(Equations equate : equations){
+                        if(equate.getOperands() == "("){
+                            balanced++;
+                        }else if(equate.getOperands() == ")"){
+                            balanced--;
+                        }
+                    }
+                    if(balanced == 0) {
+                        if (equations.get(index).getOperands() != "empty" && !equations.get(index).getOperands().isEmpty()) {
+                            if (equation == null || equation.isEmpty()) {
+                                if (equations.get(index).getFirst() % 1 == 0) {
+                                    String temp = "" + ((int) equations.get(index).getFirst());
+                                    edit.setText(temp);
+                                    int end = temp.length();
+                                    edit.setSelection(end);
+                                } else {
+                                    String temp = String.valueOf(equations.get(index).getFirst());
+                                    edit.setText(temp);
+                                    int end = temp.length();
+                                    Toast.makeText(MainActivity.this, "" + end, Toast.LENGTH_LONG).show();
+                                    edit.setSelection(end);
+                                }
+                            } else {
+                                second = Double.parseDouble(equation.trim());
+                                first = calculate(first, operands, second);
+                                equations.get(index).setFirst(first);
+                                if (equations.get(index).getFirst() % 1 == 0) {
+                                    String temp = "" + ((int) equations.get(index).getFirst());
+                                    edit.setText(temp);
+                                    int end = temp.length();
+                                    edit.setSelection(end);
+                                } else {
+                                    String temp = String.valueOf(equations.get(index).getFirst());
+                                    edit.setText(temp);
+                                    int end = temp.length();
+                                    Toast.makeText(MainActivity.this, "" + end, Toast.LENGTH_LONG).show();
+                                    edit.setSelection(end);
+                                }
+                            }
+                        } else {
+                        }
+
+                    }
+                    */
                     operands = "empty";
                     first = 0.0;
                     second = 0.0;
-                    equations.clear();
-                    equations.add(new Equations());
 
                 }else {
-                    Toast.makeText(MainActivity.this, equation, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MainActivity.this, equation, Toast.LENGTH_LONG).show();
                     //Toast.makeText(MainActivity.this, ""+isBalanced(equation), Toast.LENGTH_LONG).show();
                     //splitEquation(equation);
                     //edit.setText(equation);
-                    Toast.makeText(MainActivity.this, solve(equation), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MainActivity.this, solve(equation), Toast.LENGTH_LONG).show();
                     edit.setText(solve(equation));
                 }
             }
@@ -801,9 +851,9 @@ public class MainActivity extends ActionBarActivity {
             Intent intent = new Intent(MainActivity.this, SecondActivity.class);
             intent.putExtra("equation", equation);
             intent.putExtra("first", first);
+            intent.putExtra("index", index);
             intent.putExtra("second", second);
             intent.putExtra("operands", operands);
-            intent.putExtra("equations", equations);
             intent.putExtra("position", edit.getSelectionStart());
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent);

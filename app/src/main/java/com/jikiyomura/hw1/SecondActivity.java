@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 /**
  * Created by Jeffrey on 4/27/2015.
  */
@@ -26,12 +28,21 @@ public class SecondActivity extends ActionBarActivity {
     int position = 0;
     boolean easy, error = false;
     Menu menu;
+    ArrayList<Equations> equations;
+    int index;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.advanced);
 
         Intent intent = getIntent();
+        /*
+        equations = (ArrayList<Equations>) intent.getSerializableExtra("equations");
+        if(equations.isEmpty() || equations == null){
+            equations.add(new Equations());
+        }
+        */
+        index = intent.getIntExtra("index", 0);
         equation = intent.getStringExtra("equation");
         position = intent.getIntExtra("position", 0);
         first = intent.getDoubleExtra("first", 0.0);
@@ -118,6 +129,11 @@ public class SecondActivity extends ActionBarActivity {
                             edit.setText("ERROR");
                             position = edit.getText().length();
                             edit.setSelection(edit.getText().length());
+                        }
+                        if(equations.size() > 1){
+
+                        }else{
+                            equations.get(0).setOperands(operands);
                         }
                     }else{
                         first = Math.sin(temp);
@@ -327,15 +343,26 @@ public class SecondActivity extends ActionBarActivity {
         pow.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                edit.getText().insert(edit.getSelectionStart(), "^");
+                //edit.getText().insert(edit.getSelectionStart(), "^");
                 //edit.setText(equation);
                 equation = edit.getText().toString().trim();
+                /*
                 if(!equation.isEmpty()){
                     if(operands != "empty" && !operands.isEmpty()){
-                        operands += "^";
-                    }
-                }
+                        equations.add(new Equations(Double.parseDouble(equation), "^"));
+                        index++;
+                    }else{
+                        operands = "^";
+                        if(equations.size() > 1){
 
+                        }else{
+                            equations.get(0).setOperands(operands);
+                        }
+                    }
+                }else{
+
+                }
+                */
             }
         });
 
@@ -514,15 +541,43 @@ public class SecondActivity extends ActionBarActivity {
                 //edit.getText().insert(edit.getSelectionStart(), "(");
                 //edit.setText(equation);
                 equation = edit.getText().toString().trim();
+                /*
                 if(operands.equalsIgnoreCase("empty")){
-                    operands = "(";
+                    if(!equation.isEmpty()){
+                        first = Double.parseDouble(equation);
+                        equations.get(index).setFirst(first);
+                        operands = "*";
+                        equations.get(index).setOperands(operands);
+                        equations.add(new Equations(0.0, "("));
+                        index++;
+                        equations.add(new Equations());
+                        index++;
+                    }else{
+                        operands = "(";
+                        equations.get(index).setOperands(operands);
+                        equations.add(new Equations());
+                        index++;
+                    }
 
                 }else{
-                    operands += "(";
                     if(!equation.isEmpty()){
                         second = Double.parseDouble(equation);
+                        first = calculate(first, operands, second);
+                        equations.get(index).setFirst(first);
+                        equations.get(index).setOperands("*");
+                        equations.add(new Equations(0.0, "("));
+                        index++;
+                        equations.add(new Equations());
+                        index++;
+                    }else{
+                        equations.add(new Equations(0.0, "("));
+                        index++;
+                        equations.add(new Equations());
+                        index++;
                     }
+
                 }
+                */
             }
         });
 
@@ -530,8 +585,70 @@ public class SecondActivity extends ActionBarActivity {
         right.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                edit.getText().insert(edit.getSelectionStart(), ")");
+                //edit.getText().insert(edit.getSelectionStart(), ")");
                 //edit.setText(equation);
+                equation = edit.getText().toString().trim();
+                /*
+                boolean test = false;
+                for(Equations equate : equations){
+                    if(equate.getOperands() == "("){
+                        test = true;
+                    }
+                }
+                if(test) {
+                    if (!equation.isEmpty()) {
+                        if (equations.get(index).getOperands().equalsIgnoreCase("empty")) {
+                            equations.remove(index);
+                            index--;
+                            equations.remove(index);
+                            index--;
+
+                            equations.get(index).setFirst(calculate(equations.get(index).getFirst(), equations.get(index).getOperands(), Double.parseDouble(equation)));
+
+                            if (equations.get(index).getFirst() % 1 == 0) {
+                                edit.setText("" + (int) equations.get(index).getFirst());
+                                edit.setSelection(edit.getText().length());
+                                equations.get(index).setOperands("empty");
+                            } else {
+                                edit.setText(String.valueOf(equations.get(index).getFirst()));
+                                edit.setSelection(edit.getText().length());
+                                equations.get(index).setOperands("empty");
+                            }
+                        } else {
+                            equations.get(index).setFirst(calculate(equations.get(index).getFirst(), equations.get(index).getOperands(), Double.parseDouble(equation)));
+                            equations.remove(index);
+                            index--;
+                            equations.remove(index);
+                            index--;
+                            if (equations.get(index).getFirst() % 1 == 0) {
+                                edit.setText("" + (int) equations.get(index).getFirst());
+                                edit.setSelection(edit.getText().length());
+                                equations.get(index).setOperands("empty");
+                            } else {
+                                edit.setText(String.valueOf(equations.get(index).getFirst()));
+                                edit.setSelection(edit.getText().length());
+                                equations.get(index).setOperands("empty");
+                            }
+                        }
+                    } else {
+                        second = equations.get(index).getFirst();
+                        equations.remove(index);
+                        index--;
+                        equations.remove(index);
+                        index--;
+                        equations.get(index).setFirst(calculate(equations.get(index).getFirst(), equations.get(index).getOperands(), second));
+                        if (equations.get(index).getFirst() % 1 == 0) {
+                            edit.setText("" + (int) equations.get(index).getFirst());
+                            edit.setSelection(edit.getText().length());
+                            equations.get(index).setOperands("empty");
+                        } else {
+                            edit.setText(String.valueOf(equations.get(index).getFirst()));
+                            edit.setSelection(edit.getText().length());
+                            equations.get(index).setOperands("empty");
+                        }
+                    }
+                }
+                */
             }
         });
     }
@@ -611,6 +728,7 @@ public class SecondActivity extends ActionBarActivity {
             EditText edit = (EditText) findViewById(R.id.editText2);
             Intent intent = new Intent(SecondActivity.this, MainActivity.class);
             equation = edit.getText().toString();
+            intent.putExtra("index", index);
             intent.putExtra("equation", equation);
             intent.putExtra("position", position);
             intent.putExtra("first", first);
